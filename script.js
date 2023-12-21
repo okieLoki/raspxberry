@@ -2,24 +2,28 @@ const takePhoto = require('./takePhoto');
 const uploadPhoto = require('./uploadPhoto');
 const axios = require('axios');
 
-const takePhotoAndUpload = () => {
-    takePhoto();
-    const url = uploadPhoto('photo.jpg');
+const takePhotoAndUpload = async () => {
+    takePhoto(async (filename) => {
+        const url = await uploadPhoto(filename);
 
-    // tiwari ki script se aayega data
-    data = {
-        oreGrade: 'A',
-        silicon: 0.5,
-        iron: 0.5,
-    }
+        if (url) {
+            const data = {
+                oreGrade: 'A',
+                silicon: 0.5,
+                iron: 0.5,
+            };
 
-    // send data to server
-    const response = axios.post('https://oresense.onrender.com/data/photo', {
-        "ml_detail": JSON.stringify(data),
-        "image_url": url
-    })
+            try {
+                const response = await axios.post('https://oresense.onrender.com/data/photo', {
+                    "ml_detail": JSON.stringify(data),
+                    "image_url": url
+                });
+                console.log(response.data);
+            } catch (error) {
+                console.error(`Error posting data: ${error.message}`);
+            }
+        }
+    });
+};
 
-    console.log(response.data);
-}
-
-setInterval(takePhotoAndUpload, 10000);
+setInterval(takePhotoAndUpload, 10000)

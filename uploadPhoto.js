@@ -8,16 +8,15 @@ cloudinary.config({
     api_secret: process.env.API_SECRET
 });
 
-const uploadPhoto = (filename) => {
-    cloudinary.uploader.upload(filename, (error, result) => {
-        if (error) {
-            console.error(`Error uploading photo: ${error.message}`);
-            return;
-        }
+const uploadPhoto = async (filename) => {
+    try {
+        const result = await cloudinary.uploader.upload(filename);
         console.log(`Photo uploaded to ${result.url}`);
         fs.unlinkSync(filename);
         return result.url;
-    });
-}
+    } catch (error) {
+        console.error(`Error uploading photo: ${error.message}`);
+    }
+};
 
 module.exports = uploadPhoto;
